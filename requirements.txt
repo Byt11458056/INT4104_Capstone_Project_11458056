@@ -1,0 +1,16 @@
+pandas>=2.0.0
+numpy>=1.24.0
+yfinance>=1.0
+requests>=2.31.0
+urllib3>=1.26.0,<3
+charset-normalizer>=2.0,<4
+scikit-learn>=1.3.0
+streamlit>=1.28.0
+plotly>=5.18.0
+openai>=1.6.0
+defeatbeta-api
+httpx
+readability-lxml
+lxml
+ddgs
+googlesearch-python>=1.3.0

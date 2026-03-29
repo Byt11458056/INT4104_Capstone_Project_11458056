@@ -1,0 +1,12 @@
+[server]
+headless = true
+maxUploadSize = 5
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "dark"
+
+[client]
+showSidebarNavigation = true
