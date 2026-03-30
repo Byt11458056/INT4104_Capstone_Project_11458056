@@ -1,8 +1,9 @@
 """
-Tools Hub — main landing page for the AI Financial Analysis Assistant.
+Tools Hub — home route for the AI Financial Analyst Streamlit app.
 
-Displays a grid of predefined financial tools that users can launch
-without writing prompts.  Each tool is a zero-prompt workflow.
+First visit to the site redirects to Market Overview; returning to this
+script shows a grid of one-click tools plus recent tool results and chats.
+Each tool is a separate page under ``pages/``.
 """
 
 from __future__ import annotations
@@ -125,8 +126,8 @@ st.markdown(
 
 st.title("AI Financial Analyst")
 st.markdown(
-    "Your AI-powered toolkit for financial research.  "
-    "Pick a tool below to get started — no prompts needed."
+    "Tools hub: open any workflow below (Market Overview is the default entry when you first open the app). "
+    "Use the sidebar to switch pages, or launch a tool from the grid — no prompts required."
 )
 st.divider()
 
