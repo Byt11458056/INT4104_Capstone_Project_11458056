@@ -15,7 +15,9 @@ import pandas as pd
 
 import data_store
 from utils import format_pct
+from sidebar_config import inject_sidebar_main_entry_hide_css
 
+inject_sidebar_main_entry_hide_css()
 st.markdown("<style>@media(max-width:768px){[data-testid='column']{width:100%!important;flex:100%!important}}</style>", unsafe_allow_html=True)
 
 st.title("History")

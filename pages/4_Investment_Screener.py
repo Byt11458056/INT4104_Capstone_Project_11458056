@@ -296,7 +296,7 @@ if _scr:
     with col_ov:
         if sel_ticker and st.button("Open Overview Analysis", key="scr_to_ov"):
             st.session_state["ov_ticker"] = sel_ticker
-            st.switch_page("pages/1_Overview_Analysis.py")
+            st.switch_page("pages/2_Overview_Analysis.py")
     with col_chat:
         if st.button("Discuss in AI Chat →", type="primary", key="scr_to_chat", width="stretch"):
             st.session_state["chat_with_analysis"] = {

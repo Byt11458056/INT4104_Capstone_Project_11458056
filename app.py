@@ -13,8 +13,11 @@ sys.path.insert(0, os.path.dirname(__file__))
 import streamlit as st
 import data_store
 from llm_summary import PROVIDERS
+from sidebar_config import inject_sidebar_main_entry_hide_css
 
 st.set_page_config(page_title="AI Financial Analyst", page_icon="📊", layout="wide")
+
+inject_sidebar_main_entry_hide_css()
 
 # ── Global LLM config defaults (persist across all pages in a session) ────
 _GLOBAL_KEY_PREFIX = "global_llm"
@@ -29,17 +32,6 @@ if _gk("model") not in st.session_state:
 
 _CSS = """
 <style>
-    /* Hide "app" text in sidebar - more aggressive approach */
-    [data-testid="stSidebarNav"] li:first-child a span {
-        display: none !important;
-    }
-    [data-testid="stSidebarNav"] li:first-child a {
-        display: none !important;
-    }
-    [data-testid="stSidebarNav"] li:first-child {
-        display: none !important;
-    }
-
     /* Mobile dock-style navigation */
     @media(max-width:768px) {
         /* Hide default sidebar */
@@ -120,7 +112,7 @@ st.markdown(_CSS, unsafe_allow_html=True)
 # Auto-redirect to Market Overview
 if "redirected" not in st.session_state:
     st.session_state["redirected"] = True
-    st.switch_page("pages/2_Market_Overview.py")
+    st.switch_page("pages/1_Market_Overview.py")
 
 st.markdown(
     '<div class="disclaimer">'
@@ -140,14 +132,14 @@ st.divider()
 
 TOOLS = [
     {
-        "icon": "📊", "title": "Overview Analysis",
-        "desc": "Analyze performance, fundamentals, and get investor-specific advice for any asset.",
-        "page": "pages/1_Overview_Analysis.py",
-    },
-    {
         "icon": "🌍", "title": "Market Overview",
         "desc": "Latest market conditions, sector trends, crypto, forex, and hot topics.",
-        "page": "pages/2_Market_Overview.py",
+        "page": "pages/1_Market_Overview.py",
+    },
+    {
+        "icon": "📊", "title": "Overview Analysis",
+        "desc": "Analyze performance, fundamentals, and get investor-specific advice for any asset.",
+        "page": "pages/2_Overview_Analysis.py",
     },
     {
         "icon": "📰", "title": "News Summarizer",

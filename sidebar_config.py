@@ -68,8 +68,32 @@ def _global_key(name: str) -> str:
     return f"{_GLOBAL_KEY_PREFIX}_{name}"
 
 
+# CSS must run on every page (not only app.py); otherwise "app" stays visible after switch_page.
+_SIDEBAR_HIDE_MAIN_CSS = """
+<style>
+    /* Multipage apps: first nav item is always the main script (app.py), shown as "app" */
+    [data-testid="stSidebarNav"] ul > li:first-child,
+    [data-testid="stSidebarNav"] > ul > li:first-of-type,
+    [data-testid="stSidebarNav"] li:first-child {
+        display: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        visibility: hidden !important;
+    }
+</style>
+"""
+
+
+def inject_sidebar_main_entry_hide_css() -> None:
+    """Hide the main-script link (typically labeled \"app\") in the sidebar nav."""
+    st.markdown(_SIDEBAR_HIDE_MAIN_CSS, unsafe_allow_html=True)
+
+
 def render_llm_sidebar(prefix: str) -> LLMConfig:
     """Render one shared LLM configuration for the whole app session."""
+    inject_sidebar_main_entry_hide_css()
     st.subheader("LLM Provider")
 
     provider_names = list(PROVIDERS.keys())
