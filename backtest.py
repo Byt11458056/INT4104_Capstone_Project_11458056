@@ -417,36 +417,39 @@ def run_multi_checkpoint_backtest(
     return result
 
 
+def _compute_sharpe_ratio(
+    equity: np.ndarray,
+    *,
+    trading_days_per_year: int = 252,
+    risk_free_daily: float = 0.0,
+) -> float:
+    """Annualized Sharpe from daily simple returns on the equity curve.
+
+    Uses sample standard deviation (ddof=1). Assumes ~252 trading days per year.
+    Risk-free rate defaults to zero (common for strategy comparison).
+    """
+    if equity is None or len(equity) < 3:
+        return 0.0
+    eq = np.asarray(equity, dtype=float)
+    if np.any(~np.isfinite(eq)) or np.any(eq <= 0):
+        return 0.0
+    daily_ret = np.diff(eq) / eq[:-1]
+    daily_ret = daily_ret[np.isfinite(daily_ret)]
+    if len(daily_ret) < 2:
+        return 0.0
+    excess = daily_ret - risk_free_daily
+    std = float(np.std(excess, ddof=1))
+    if std < 1e-12:
+        return 0.0
+    mean_excess = float(np.mean(excess))
+    return float(np.sqrt(trading_days_per_year) * mean_excess / std)
+
+
 def compute_metrics(result: BacktestResult) -> dict:
     """Compute trading performance metrics from a backtest result."""
-    trades = result.trades
-    if not trades:
-        return {"num_trades": 0}
+    eq = np.array(result.ai_equity, dtype=float)
+    sharpe_ratio = _compute_sharpe_ratio(eq)
 
-    positions = [t for t in trades if t.position != "CASH"]
-    cash_moves = [t for t in trades if t.position == "CASH"]
-
-    # Win/loss (simplified: a trade "wins" if the next trade's price moved
-    # in the right direction compared to entry)
-    wins = 0
-    losses = 0
-    for i, t in enumerate(trades[:-1]):
-        next_t = trades[i + 1]
-        price_change = next_t.price - t.price
-        if t.position == "LONG" and price_change > 0:
-            wins += 1
-        elif t.position == "SHORT" and price_change < 0:
-            wins += 1
-        elif t.position == "CASH":
-            pass
-        else:
-            losses += 1
-
-    total_decided = wins + losses
-    win_rate = wins / total_decided if total_decided > 0 else 0
-
-    # Max drawdown from equity curve
-    eq = np.array(result.ai_equity)
     if len(eq) > 0:
         peak = np.maximum.accumulate(eq)
         drawdown = (eq - peak) / peak
@@ -454,14 +457,27 @@ def compute_metrics(result: BacktestResult) -> dict:
     else:
         max_dd = 0.0
 
+    trades = result.trades
+    if not trades:
+        return {
+            "num_trades": 0,
+            "long_trades": 0,
+            "short_trades": 0,
+            "cash_moves": 0,
+            "sharpe_ratio": round(sharpe_ratio, 4),
+            "max_drawdown": round(max_dd, 4),
+            "alpha_vs_bh": round(result.ai_return - result.bh_return, 4),
+            "alpha_vs_sp": round(result.ai_return - result.sp_return, 4),
+        }
+
+    cash_moves = [t for t in trades if t.position == "CASH"]
+
     return {
         "num_trades": len(trades),
         "long_trades": sum(1 for t in trades if t.position == "LONG"),
         "short_trades": sum(1 for t in trades if t.position == "SHORT"),
         "cash_moves": len(cash_moves),
-        "wins": wins,
-        "losses": losses,
-        "win_rate": round(win_rate, 2),
+        "sharpe_ratio": round(sharpe_ratio, 4),
         "max_drawdown": round(max_dd, 4),
         "alpha_vs_bh": round(result.ai_return - result.bh_return, 4),
         "alpha_vs_sp": round(result.ai_return - result.sp_return, 4),

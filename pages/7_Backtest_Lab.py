@@ -163,11 +163,11 @@ if run_btn:
         "alpha_vs_bh": metrics.get("alpha_vs_bh", 0),
         "alpha_vs_sp": metrics.get("alpha_vs_sp", 0),
         "num_trades": metrics.get("num_trades", 0),
-        "win_rate": metrics.get("win_rate", 0),
+        "sharpe_ratio": metrics.get("sharpe_ratio", 0),
         "signal": f"{metrics.get('num_trades', 0)} trades",
         "position": "multi",
         "confidence": 0,
-        "reasoning": f"Win rate: {metrics.get('win_rate', 0):.0%}, Alpha vs B&H: {metrics.get('alpha_vs_bh', 0):+.2%}",
+        "reasoning": f"Sharpe: {metrics.get('sharpe_ratio', 0):.2f}, Alpha vs B&H: {metrics.get('alpha_vs_bh', 0):+.2%}",
         "allocation": 0,
     }
 
@@ -185,7 +185,7 @@ if _result and _result.dates:
     c1.metric("AI Return", f"{result.ai_return:+.2%}")
     c2.metric("Buy & Hold", f"{result.bh_return:+.2%}")
     c3.metric("S&P 500", f"{result.sp_return:+.2%}")
-    c4.metric("Win Rate", f"{metrics.get('win_rate', 0):.0%}")
+    c4.metric("Sharpe (ann.)", f"{metrics.get('sharpe_ratio', 0):.2f}")
 
     c5, c6, c7, c8 = st.columns(4)
     c5.metric("Alpha vs B&H", f"{metrics.get('alpha_vs_bh', 0):+.2%}")
@@ -306,10 +306,10 @@ if _result and _result.dates:
         mc1.metric("Long Trades", metrics.get("long_trades", 0))
         mc2.metric("Short Trades", metrics.get("short_trades", 0))
         mc3.metric("Cash Moves", metrics.get("cash_moves", 0))
-
-        mc4, mc5 = st.columns(2)
-        mc4.metric("Winning Trades", metrics.get("wins", 0))
-        mc5.metric("Losing Trades", metrics.get("losses", 0))
+        st.caption(
+            "Sharpe uses daily returns on the AI equity curve, annualized (~252 trading days), "
+            "risk-free rate 0."
+        )
 
     # Save tool result
     try:
@@ -322,14 +322,14 @@ if _result and _result.dates:
                 "bh_return": result.bh_return,
                 "sp_return": result.sp_return,
                 "num_trades": metrics.get("num_trades", 0),
-                "win_rate": metrics.get("win_rate", 0),
+                "sharpe_ratio": metrics.get("sharpe_ratio", 0),
                 "max_drawdown": metrics.get("max_drawdown", 0),
                 "alpha_vs_bh": metrics.get("alpha_vs_bh", 0),
                 "alpha_vs_sp": metrics.get("alpha_vs_sp", 0),
             },
             summary=(
                 f"AI: {result.ai_return:+.2%} ({metrics.get('num_trades', 0)} trades, "
-                f"WR: {metrics.get('win_rate', 0):.0%}), "
+                f"Sharpe {metrics.get('sharpe_ratio', 0):.2f}), "
                 f"B&H: {result.bh_return:+.2%}, S&P: {result.sp_return:+.2%}"
             ),
         )
@@ -350,7 +350,7 @@ if _bt:
                 f"AI traded {_bt.get('ticker', '')} over {_bt.get('lookback', '')}: "
                 f"Return {_bt.get('ai_return', 0):+.2%}, "
                 f"{_bt.get('num_trades', 0)} trades, "
-                f"WR {_bt.get('win_rate', 0):.0%}, "
+                f"Sharpe {_bt.get('sharpe_ratio', 0):.2f}, "
                 f"B&H: {_bt.get('bh_return', 0):+.2%}"
             ),
             "result": _bt,
@@ -369,7 +369,7 @@ if _bt:
                 f"Multi-checkpoint backtest for {_bt.get('ticker', '')} "
                 f"({_bt.get('lookback', '')}):\n\n"
                 f"AI trader made {_bt.get('num_trades', 0)} position changes\n"
-                f"Win rate: {_bt.get('win_rate', 0):.0%}\n\n"
+                f"Sharpe (annualized): {_bt.get('sharpe_ratio', 0):.2f}\n\n"
                 f"Results:\n"
                 f"  AI return: {_bt.get('ai_return', 0):+.2%}\n"
                 f"  Buy & Hold: {_bt.get('bh_return', 0):+.2%}\n"
@@ -391,7 +391,7 @@ if _bt:
                                 "Analyze these multi-checkpoint backtest results. "
                                 "The AI made multiple trading decisions across the period. "
                                 "Was its timing good? Did it correctly identify trends? "
-                                "Discuss the win rate, alpha, and what could improve."
+                                "Discuss the Sharpe ratio, alpha, drawdown, and what could improve."
                             )},
                             {"role": "user", "content": summary_text},
                         ],
