@@ -30,7 +30,7 @@ On first open, the app switches to **Market Overview**. The **Tools Hub** (tool 
    docker compose up --build
    ```
 
-4. Open **http://localhost:8501**. The first run switches to **Market Overview**. For the **Tools Hub** (launchers and recent activity), go to **http://localhost:8501/** again or bookmark the home URL.
+4. Open **http://localhost:8501**. The first run switches to **Market Overview**.
 
 A named Docker volume persists `data/` inside the container (SQLite at `data/store.db`).
 
