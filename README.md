@@ -40,7 +40,6 @@ Streamlit lists these under **pages** in the sidebar (filename order). The **Too
 
 | Page | File | Purpose |
 |------|------|---------|
-| Tools Hub | `app.py` (home `/`) | Launch tools, recent results and chats |
 | Market Overview | `pages/1_Market_Overview.py` | Watchlists, charts, macro-style views |
 | Overview Analysis | `pages/2_Overview_Analysis.py` | Single-ticker performance, fundamentals, AI brief |
 | News Summarizer | `pages/3_News_Summarizer.py` | Headlines, sentiment, political / market signals |
@@ -54,7 +53,6 @@ Streamlit lists these under **pages** in the sidebar (filename order). The **Too
 
 | Path | Role |
 |------|------|
-| `app.py` | Tools hub; global LLM session defaults; redirect to Market Overview |
 | `Dockerfile`, `docker-compose.yml` | Python 3.11 image; port 8501; `app_data` volume for `data/` |
 | `sidebar_config.py` | Shared LLM sidebar; hides main-script nav label |
 | `pages/*.py` | Multipage UI (see table above) |
